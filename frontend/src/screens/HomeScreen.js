@@ -1,7 +1,12 @@
 import axios from "axios";
 import { useEffect, useReducer, useState } from "react";
-import { Link } from "react-router-dom";
 import logger from "use-reducer-logger";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Product from "../components/Product";
+import { Helmet } from "react-helmet-async";
+import LoadingBox from "../components/LoadingBox";
+import MessageBox from "../components/MessageBox";
 //import data from "../data";
 
 const reducer = (state, action) => {
@@ -33,35 +38,30 @@ function HomeScreen() {
       } catch (err) {
         dispatch({ type: "FETCH_FAIL", payload: err.message });
       }
+
       //setProducts(result.data);
     };
     fetchData();
   }, []);
   return (
     <div>
+      <Helmet>
+        <title>Amazona</title>
+      </Helmet>
       <h1>Featured Products</h1>
       <div className="products">
         {loading ? (
-          <div>Loading...</div>
+          <LoadingBox />
         ) : error ? (
-          <div>{error}</div>
+          <MessageBox variant="danger">{error}</MessageBox>
         ) : (
-          products.map((product) => (
-            <div className="product" key={product.slug}>
-              <Link to={`/product/${product.slug}`}>
-                <img src={product.image} alt={product.name} />
-              </Link>
-              <div className="product-info">
-                <Link to={`/product/${product.slug}`}>
-                  <p>{product.name}</p>
-                </Link>
-                <p>
-                  <strong>${product.price}</strong>
-                </p>
-                <button type="">Add to Cart</button>
-              </div>
-            </div>
-          ))
+          <Row>
+            {products.map((product) => (
+              <Col key={product.slug} sm={6} md={4} lg={3} className="mb-3">
+                <Product product={product}></Product>
+              </Col>
+            ))}
+          </Row>
         )}
       </div>
     </div>
